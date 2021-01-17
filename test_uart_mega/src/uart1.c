@@ -5,6 +5,7 @@
     Author: user
 */
 #include <uart1.h>
+#include <uart.h>
 
 void uart1_init(void) {
     UBRR1H = (BRC >> 8);
