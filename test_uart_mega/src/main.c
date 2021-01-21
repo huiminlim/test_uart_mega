@@ -4,12 +4,11 @@
 #include <uart.h>
 #include <avr/interrupt.h>
 
-int flag_string_done = 0;
-
+extern int hello;
+extern int flag_string_done;
 
 int main (void) {
-    char str [20] ;
-    int str_pos = 0;
+
 
     board_init();
 
@@ -21,42 +20,8 @@ int main (void) {
     sei(); // Turn on external interrupts
 
     while (1) {
-        char c = uart1_rx_char();
+        uart1_rx_string();
 
-        if (c != 0) {
-            printf("Char is %d\r\n", c);
-        }
-
-        // NOT CR
-        if (c != 13 && c != 0) {
-            str[str_pos++] = c;
-        }
-        else if (c == 13) {
-            str[str_pos] = '\0';
-            char test = uart1_rx_char(); // Read the LF
-
-            if (test == 10) {
-                printf("LF is read\r\n");
-            }
-
-            printf("String is %s\r\n\r\n", str);
-            str_pos = 0;
-            flag_string_done = 1;
-        }
-        else if (c == 10) {
-            // ignore
-        }
+        //delay_ms(600);
     }
 }
-
-
-/*
-
-
-        if (c == '1') {
-	        printf("hello\r\n");
-        }
-        else if (c != 0) {
-	        printf("%d\r\n", c);
-        }
-*/

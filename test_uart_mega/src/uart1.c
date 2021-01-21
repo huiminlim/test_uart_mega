@@ -8,8 +8,13 @@
 #include <uart.h>
 
 char rx_buffer[RX_BUFFER_SIZE];
+
 uint8_t rx_read_pos = 0;
 uint8_t rx_write_pos = 0;
+
+int hello = 100;
+
+int flag_string_done = 0;
 
 void uart1_init(void) {
     UBRR1H = (BRC >> 8);
@@ -37,13 +42,25 @@ void uart1_tx_string(char str[]) {
 ISR(USART1_RX_vect) {
     //printf("isr\r\n");
 
-    rx_buffer[rx_write_pos] = UDR1;
+    char c = UDR1;
+
+    //printf("%c\r\n", c);
+
+    // LF read
+    if (c == 10) {
+        flag_string_done = 1;
+        //printf("done\r\n");
+    }
+
+    rx_buffer[rx_write_pos] = c;
     rx_write_pos++;
 
     // Buffer may overflow
     if (rx_write_pos >= RX_BUFFER_SIZE) {
         rx_write_pos = 0;
     }
+
+
 }
 
 char uart1_peek_char(void) {
@@ -70,43 +87,38 @@ char uart1_rx_char(void) {
     return ret;
 }
 
-/*
+void uart1_rx_string(void) {
+    char str [20] ;
+    int str_pos = 0;
 
+    while (flag_string_done) {
+        char c = uart1_rx_char();
 
-    void myloop(void) {
+        if (c != 0) {
+            printf("Char is %d\r\n", c);
+        }
 
-	while (1) {
-		int done = 0;
-		char cmd [100] = "";
+        // NOT CR
+        if (c != 13 && c != '\r' && c != 0) {
+            str[str_pos++] = c;
+        }
+        else if (c == 13 || c == '\r') {
+            str[str_pos] = '\0';
+            char test = uart1_rx_char(); // Read the LF
 
-		int ptr = 0;
-		char c = 'c';
+            if (test == 10) {
+                printf("LF is read\r\n");
+            }
 
-		// c is not LF
-		while (c != 10) {
-			int c = getchar();
+            printf("String is %s\r\n\r\n", str);
 
-			if (c == 10) {
-				break;
-			}
+            flag_string_done = 0;
 
-			cmd[ptr++] = c;
-			//printf("char is %d\r\n", c);
-		}
-
-		cmd[ptr] = '\0';
-		done = 1;
-
-		//printf("string is %s\r\n", cmd);
-
-		if (done != 0) {
-			//printf("%s\r\n", cmd);
-			//uart1_tx_char('8');
-			uart1_tx_string(cmd);
-			delay_ms(10);
-			done = 0;
-		}
-	}
+            str_pos = 0;
+        }
+        else if (c == 10) {
+            // ignore
+        }
     }
+}
 
-*/

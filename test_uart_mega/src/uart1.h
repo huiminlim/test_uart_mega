@@ -14,16 +14,24 @@
 #define BAUD					9600
 #define BRC						((FF_CPU/16/BAUD) - 1)
 
-void uart1_init(void);
-void uart1_tx_char(char c);
-void uart1_tx_string(char str[]);
-
 #define RX_BUFFER_SIZE 128
 
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
 
+struct uart1_string {
+    char		str [50];
+    uint8_t		str_len;
+} ;
+
+void uart1_init(void);
+
+void uart1_tx_char(char c);
+void uart1_tx_string(char str[]);
 
 char uart1_rx_char(void);
 char uart1_peek_char(void);
-void uart1_rx_string(char[], int);
+void uart1_rx_string(void);
+
+uint8_t return_status(void);
+void set_status(void) ;
