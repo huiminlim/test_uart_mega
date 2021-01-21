@@ -1,15 +1,10 @@
 #include <asf.h>
+#include <avr/interrupt.h>
 #include <delay.h>
 #include <uart1.h>
 #include <uart.h>
-#include <avr/interrupt.h>
-
-extern int hello;
-extern int flag_string_done;
 
 int main (void) {
-
-
     board_init();
 
     // Baud rate = 57600
@@ -19,9 +14,13 @@ int main (void) {
     uart1_init();
     sei(); // Turn on external interrupts
 
-    while (1) {
-        uart1_rx_string();
 
-        //delay_ms(600);
+
+    while (1) {
+        const char *s = uart1_rx_string();
+
+        if (strcmp("random", s) != 0) {
+            printf("string is: %s\r\n", s);
+        }
     }
 }

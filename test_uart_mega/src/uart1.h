@@ -31,7 +31,6 @@ void uart1_tx_string(char str[]);
 
 char uart1_rx_char(void);
 char uart1_peek_char(void);
-void uart1_rx_string(void);
+const char *uart1_rx_string(void);
 
-uint8_t return_status(void);
-void set_status(void) ;
+const char *debug(void);

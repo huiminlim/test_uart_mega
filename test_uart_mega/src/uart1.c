@@ -87,15 +87,18 @@ char uart1_rx_char(void) {
     return ret;
 }
 
-void uart1_rx_string(void) {
+const char *uart1_rx_string(void) {
     char str [20] ;
     int str_pos = 0;
+
+    static char buf[32];
+
 
     while (flag_string_done) {
         char c = uart1_rx_char();
 
         if (c != 0) {
-            printf("Char is %d\r\n", c);
+            //printf("Char is %d\r\n", c);
         }
 
         // NOT CR
@@ -107,18 +110,28 @@ void uart1_rx_string(void) {
             char test = uart1_rx_char(); // Read the LF
 
             if (test == 10) {
-                printf("LF is read\r\n");
+                //printf("LF is read\r\n");
             }
 
-            printf("String is %s\r\n\r\n", str);
+            //printf("String is %s\r\n\r\n", str);
 
             flag_string_done = 0;
 
             str_pos = 0;
+
+
+            sprintf(buf, "%s", str);
+            return buf;
         }
         else if (c == 10) {
             // ignore
         }
     }
+
+    return "random";
 }
 
+
+const char *debug(void) {
+    return "hello";
+}
